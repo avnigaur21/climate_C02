@@ -1,10 +1,24 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import type { Secret, SignOptions } from 'jsonwebtoken';
 import Database from '../database/connection';
 import { User } from '../types';
 
 export class AuthService {
   private db = Database.getInstance();
+
+  private signToken(user: Pick<User, 'id' | 'email'>): string {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+
+    const options: SignOptions = {
+      expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn']
+    };
+
+    return jwt.sign({ userId: user.id, email: user.email }, secret as Secret, options);
+  }
 
   async signup(email: string, password: string): Promise<{ user: Omit<User, 'password_hash'>; token: string }> {
     // Check if user already exists
@@ -30,11 +44,7 @@ export class AuthService {
     const user = result.rows[0];
 
     // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+    const token = this.signToken(user);
 
     return { user, token };
   }
@@ -59,11 +69,7 @@ export class AuthService {
     }
 
     // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+    const token = this.signToken(user);
 
     // Remove password hash from response
     const { password_hash, ...userWithoutPassword } = user;

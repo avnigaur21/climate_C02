@@ -4,6 +4,7 @@ import { SummaryCard } from "@/components/SummaryCard";
 import { RiskCard } from "@/components/RiskCard";
 import { TimelineChart } from "@/components/TimelineChart";
 import { RecommendationsList } from "@/components/RecommendationsList";
+import { ScenarioLab } from "@/components/ScenarioLab";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -354,6 +355,8 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        <ScenarioLab />
       </div>
     </div>
   );

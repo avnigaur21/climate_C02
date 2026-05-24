@@ -28,33 +28,33 @@ export class EmissionCalculator {
   }
 
   private normalizeAmount(amount: number, unit: string): number {
-    const unitLower = unit.toLowerCase();
+    const unitLower = unit.toLowerCase().trim();
     
     // Distance conversions to km
-    if (unitLower.includes('mile')) {
+    if (unitLower === 'mi' || unitLower === 'mile' || unitLower === 'miles') {
       return amount * 1.60934;
-    } else if (unitLower.includes('m')) {
+    } else if (unitLower === 'm' || unitLower === 'meter' || unitLower === 'meters') {
       return amount / 1000; // meters to km
     }
     
     // Weight conversions to kg
-    if (unitLower.includes('lb') || unitLower.includes('pound')) {
+    if (unitLower === 'lb' || unitLower === 'lbs' || unitLower === 'pound' || unitLower === 'pounds') {
       return amount * 0.453592;
-    } else if (unitLower.includes('g')) {
+    } else if (unitLower === 'g' || unitLower === 'gram' || unitLower === 'grams') {
       return amount / 1000; // grams to kg
     }
     
     // Energy conversions to kWh
-    if (unitLower.includes('mj')) {
+    if (unitLower === 'mj') {
       return amount * 0.277778; // MJ to kWh
-    } else if (unitLower.includes('btu')) {
+    } else if (unitLower === 'btu') {
       return amount * 0.000293071; // BTU to kWh
     }
     
     // Currency conversions to USD (simplified)
-    if (unitLower.includes('eur')) {
+    if (unitLower === 'eur') {
       return amount * 1.1; // Approximate EUR to USD
-    } else if (unitLower.includes('gbp')) {
+    } else if (unitLower === 'gbp') {
       return amount * 1.25; // Approximate GBP to USD
     }
     

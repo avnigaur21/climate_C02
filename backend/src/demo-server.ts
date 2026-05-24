@@ -117,10 +117,11 @@ app.get('/api/regions', (req, res) => {
   });
 });
 
-app.get('/api/regions/:id', (req, res) => {
+app.get('/api/regions/:id', (req, res): void => {
   const region = demoRegions.find(r => r.id === req.params.id);
   if (!region) {
-    return res.status(404).json({ error: 'Region not found' });
+    res.status(404).json({ error: 'Region not found' });
+    return;
   }
   res.json({ region });
 });

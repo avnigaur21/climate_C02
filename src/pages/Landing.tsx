@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 
 export default function Landing() {
+  const heroImage = new URL("../../carbonfootprint.png", import.meta.url).href;
+
   const features = [
     {
       icon: <BarChart3 className="h-8 w-8 text-forest" />,
@@ -40,7 +42,7 @@ export default function Landing() {
     { value: "2.3B", label: "People at climate risk", icon: <Users className="h-5 w-5" /> },
     { value: "15%", label: "Annual emission growth", icon: <TrendingUp className="h-5 w-5" /> },
     { value: "89M", label: "Climate displaced", icon: <Globe className="h-5 w-5" /> },
-    { value: "1.5°C", label: "Temperature increase", icon: <Activity className="h-5 w-5" /> }
+    { value: "1.5C", label: "Temperature increase", icon: <Activity className="h-5 w-5" /> }
   ];
 
   return (
@@ -62,7 +64,15 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-hero">
+      <section
+        className="relative overflow-hidden bg-primary"
+        style={{
+          backgroundImage: `linear-gradient(135deg, hsl(152 64% 18% / 0.96), hsl(168 71% 28% / 0.88)), url(${heroImage})`,
+          backgroundPosition: "center, right 8% center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover, min(42vw, 420px)"
+        }}
+      >
         <div className="absolute inset-0 bg-black/10" />
         <div className="relative container mx-auto px-6 py-24 text-center text-white">
           <div className="mx-auto max-w-4xl space-y-8">
@@ -187,7 +197,7 @@ export default function Landing() {
               <span className="font-semibold">Carbon Risk Tracker</span>
             </div>
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-              <span>© 2024 Climate Impact Analytics</span>
+              <span>(c) 2026 Climate Impact Analytics</span>
               <Shield className="h-4 w-4" />
               <span>Humanitarian risk data is simplified for demo purposes</span>
             </div>

@@ -17,11 +17,12 @@ const loginSchema = Joi.object({
 });
 
 // POST /api/auth/signup
-router.post('/signup', async (req: Request, res: Response) => {
+router.post('/signup', async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = signupSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ error: error.details[0].message });
+      res.status(400).json({ error: error.details[0].message });
+      return;
     }
 
     const { email, password } = value;
@@ -39,11 +40,12 @@ router.post('/signup', async (req: Request, res: Response) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = loginSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ error: error.details[0].message });
+      res.status(400).json({ error: error.details[0].message });
+      return;
     }
 
     const { email, password } = value;

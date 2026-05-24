@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Info
 } from "lucide-react";
+import { climateRegions } from "@/lib/climateScenario";
 
 interface RegionData {
   id: string;
@@ -38,81 +39,22 @@ export default function Regions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
 
-  // Mock regional data
-  const regions: RegionData[] = [
-    {
-      id: "1",
-      name: "Bangladesh Delta",
-      lat: 23.6850,
-      lng: 90.3563,
-      riskScore: 85,
-      peopleAffected: 4200000,
-      primaryRisk: "Coastal flooding and sea level rise",
-      climateImpacts: ["Flooding", "Cyclones", "Saltwater intrusion"],
-      population: 8500000,
-      vulnerabilityIndex: 8.2
-    },
-    {
-      id: "2",
-      name: "Sahel Region",
-      lat: 14.0000,
-      lng: 2.0000,
-      riskScore: 78,
-      peopleAffected: 2100000,
-      primaryRisk: "Drought and desertification",
-      climateImpacts: ["Drought", "Desertification", "Food insecurity"],
-      population: 5600000,
-      vulnerabilityIndex: 7.8
-    },
-    {
-      id: "3",
-      name: "Pacific Small Islands",
-      lat: -8.5000,
-      lng: 179.0000,
-      riskScore: 92,
-      peopleAffected: 680000,
-      primaryRisk: "Sea level rise and coral bleaching",
-      climateImpacts: ["Sea level rise", "Coral bleaching", "Storm surge"],
-      population: 890000,
-      vulnerabilityIndex: 9.1
-    },
-    {
-      id: "4",
-      name: "Central America Highlands",
-      lat: 14.6349,
-      lng: -90.5069,
-      riskScore: 73,
-      peopleAffected: 1800000,
-      primaryRisk: "Extreme weather and crop failure",
-      climateImpacts: ["Hurricanes", "Drought", "Crop failure"],
-      population: 3200000,
-      vulnerabilityIndex: 7.3
-    },
-    {
-      id: "5",
-      name: "Arctic Communities",
-      lat: 71.0000,
-      lng: -8.0000,
-      riskScore: 67,
-      peopleAffected: 180000,
-      primaryRisk: "Ice melt and infrastructure damage",
-      climateImpacts: ["Ice melt", "Permafrost thaw", "Infrastructure damage"],
-      population: 250000,
-      vulnerabilityIndex: 6.8
-    },
-    {
-      id: "6",
-      name: "East African Highlands",
-      lat: 1.0000,
-      lng: 37.0000,
-      riskScore: 71,
-      peopleAffected: 3400000,
-      primaryRisk: "Irregular rainfall and food insecurity",
-      climateImpacts: ["Irregular rainfall", "Food insecurity", "Pastoral conflicts"],
-      population: 6800000,
-      vulnerabilityIndex: 7.1
-    }
-  ];
+  const regions: RegionData[] = climateRegions.map((region) => {
+    const riskScore = Math.round(region.vulnerabilityIndex * 100);
+
+    return {
+      id: region.id,
+      name: region.name,
+      lat: region.lat,
+      lng: region.lng,
+      riskScore,
+      peopleAffected: Math.round(region.population * region.exposureFraction * (riskScore / 100)),
+      primaryRisk: region.primaryRisk,
+      climateImpacts: region.climateImpacts,
+      population: region.population,
+      vulnerabilityIndex: Number((region.vulnerabilityIndex * 10).toFixed(1))
+    };
+  });
 
   const filteredRegions = regions.filter(region => {
     const matchesSearch = region.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

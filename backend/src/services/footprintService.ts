@@ -62,7 +62,7 @@ export class FootprintService {
       params
     );
 
-    return result.rows.map(row => ({
+    return result.rows.map((row: { category: string; total_co2_kg: string; count: string }) => ({
       category: row.category,
       total_co2_kg: parseFloat(row.total_co2_kg),
       count: parseInt(row.count),

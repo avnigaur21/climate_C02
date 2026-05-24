@@ -8,6 +8,26 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom", "react-router-dom"],
+          charts: ["recharts"],
+          maps: ["leaflet", "react-leaflet"],
+          supabase: ["@supabase/supabase-js"],
+          ui: [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-navigation-menu",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-toast"
+          ]
+        }
+      }
+    }
+  },
   plugins: [react()],
   resolve: {
     alias: {

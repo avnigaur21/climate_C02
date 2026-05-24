@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   LineChart,
   Line,
@@ -6,7 +7,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
   Area,
   AreaChart
 } from "recharts";
@@ -34,7 +34,27 @@ export function TimelineChart({
   type = "line",
   showProjections = true 
 }: TimelineChartProps) {
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
   const ChartComponent = type === "area" ? AreaChart : LineChart;
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    const updateSize = () => {
+      const bounds = chartRef.current?.getBoundingClientRect();
+      setChartSize({
+        width: bounds && bounds.width > 0 ? Math.floor(bounds.width) : 0,
+        height: bounds && bounds.height > 0 ? Math.floor(bounds.height) : 0
+      });
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(chartRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -69,9 +89,9 @@ export function TimelineChart({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <ChartComponent data={data}>
+        <div ref={chartRef} className="h-80 min-w-0">
+          {chartSize.width > 0 && chartSize.height > 0 && (
+              <ChartComponent width={chartSize.width} height={chartSize.height} data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="year" 
@@ -94,7 +114,7 @@ export function TimelineChart({
                     stroke="hsl(var(--earth-brown))"
                     fill="hsl(var(--earth-brown))"
                     fillOpacity={0.3}
-                    name="CO₂ Emissions (tons)"
+                    name="CO2 Emissions (tons)"
                   />
                   <Area
                     type="monotone"
@@ -113,7 +133,7 @@ export function TimelineChart({
                     dataKey="emissions"
                     stroke="hsl(var(--earth-brown))"
                     strokeWidth={2}
-                    name="CO₂ Emissions (tons)"
+                    name="CO2 Emissions (tons)"
                   />
                   <Line
                     type="monotone"
@@ -138,8 +158,8 @@ export function TimelineChart({
                   />
                 </>
               )}
-            </ChartComponent>
-          </ResponsiveContainer>
+              </ChartComponent>
+          )}
         </div>
       </CardContent>
     </Card>

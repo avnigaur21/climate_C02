@@ -15,11 +15,12 @@ const regionsQuerySchema = Joi.object({
 });
 
 // GET /api/regions
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = regionsQuerySchema.validate(req.query);
     if (error) {
-      return res.status(400).json({ error: error.details[0].message });
+      res.status(400).json({ error: error.details[0].message });
+      return;
     }
 
     const { limit, offset, search, min_vulnerability, max_vulnerability } = value;
@@ -92,34 +93,11 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/regions/:id
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const regionId = req.params.id;
-
-    const result = await db.query(
-      'SELECT * FROM regions WHERE id = $1',
-      [regionId]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Region not found' });
-    }
-
-    res.json({
-      region: result.rows[0]
-    });
-  } catch (error: any) {
-    console.error('Get region error:', error);
-    res.status(500).json({ error: 'Failed to get region' });
-  }
-});
-
 // GET /api/regions/stats/summary
-router.get('/stats/summary', async (req: Request, res: Response) => {
+router.get('/stats/summary', async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await db.query(`
-      SELECT 
+      SELECT
         COUNT(*) as total_regions,
         AVG(vulnerability_index) as avg_vulnerability,
         MIN(vulnerability_index) as min_vulnerability,
@@ -144,6 +122,30 @@ router.get('/stats/summary', async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Get regions stats error:', error);
     res.status(500).json({ error: 'Failed to get regions statistics' });
+  }
+});
+
+// GET /api/regions/:id
+router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const regionId = req.params.id;
+
+    const result = await db.query(
+      'SELECT * FROM regions WHERE id = $1',
+      [regionId]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Region not found' });
+      return;
+    }
+
+    res.json({
+      region: result.rows[0]
+    });
+  } catch (error: any) {
+    console.error('Get region error:', error);
+    res.status(500).json({ error: 'Failed to get region' });
   }
 });
 

@@ -1,118 +1,115 @@
-# Carbon → Humanitarian Risk Tracker
+# Carbon Risk Tracker
 
-A modern web application that connects personal carbon emissions to their humanitarian impact on vulnerable communities worldwide.
+Carbon Risk Tracker is a full-stack climate intelligence app that connects personal carbon emissions to regional humanitarian risk. It combines a React analytics dashboard, an explainable scenario model, CSV import flows, interactive maps, and an Express/PostgreSQL backend.
+
+The project is built as a resume-ready portfolio piece: it has product polish, strict TypeScript builds, backend tests, GitHub Actions CI, and a deployment workflow for GitHub Pages.
+
+## Portfolio Highlights
+
+- Built an explainable climate scenario engine that models emissions reduction, adaptation investment, regional vulnerability, exposure, and people-at-risk outcomes.
+- Added an interactive Scenario Lab with mitigation sliders, horizon controls, risk projections, and methodology transparency.
+- Hardened backend TypeScript, fixed a real emissions unit-conversion bug, and moved tests to a lightweight Node test runner.
+- Improved production readiness with code-split Vite bundles, GitHub Actions build/test/deploy workflow, and environment variable hygiene.
+- Preserved the original upstream repo as `upstream` so this copy can be published separately to your GitHub account as `origin`.
 
 ## Features
 
-- **Carbon Footprint Tracking**: Monitor emissions across transport, energy, food, and shopping
-- **Humanitarian Risk Visualization**: See how your emissions affect vulnerable communities
-- **Interactive Global Map**: Explore risk regions with real-time data
-- **CSV Data Import**: Upload your activity data for automated analysis
-- **Personalized Recommendations**: Get actionable insights to reduce your impact
-- **Demo Mode**: Explore with sample data without registration
+- Carbon footprint dashboard across transport, energy, food, shopping, and travel actions.
+- Humanitarian risk cards for flooding, drought, heat, displacement, and food insecurity.
+- Scenario Lab for mitigation and adaptation planning through 2030, 2040, and 2050.
+- Interactive Leaflet map of vulnerable regions.
+- CSV import UI and backend CSV parsing/calculation service.
+- Supabase-powered frontend auth integration and Express/JWT backend auth implementation.
+- PostgreSQL schema, migrations, seed data, and demo backend server.
 
 ## Tech Stack
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **UI Framework**: Tailwind CSS + shadcn/ui components
-- **Charts**: Recharts for data visualization
-- **Maps**: Leaflet for interactive mapping
-- **Routing**: React Router v6
-- **State Management**: React Query
+- Frontend: React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Recharts, Leaflet
+- Backend: Node.js, Express, TypeScript, PostgreSQL, JWT, Joi, Multer
+- Tooling: GitHub Actions, Vercel config, GitHub Pages deployment, strict TypeScript builds
 
-## Getting Started
+## Architecture
 
-### Prerequisites
+```text
+src/
+  components/ScenarioLab.tsx      Explainable scenario UI
+  lib/climateScenario.ts          Scenario/risk model and regional data
+  pages/                          Landing, demo, dashboard, regions, import
+  integrations/supabase/          Supabase client and generated types
 
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <YOUR_GIT_URL>
-cd carbon-risk-tracker
+backend/
+  src/services/                   Auth, emissions, footprint, risk services
+  src/routes/                     Express API routes
+  src/database/                   Schema, migration, and seed scripts
+  src/test/                       Backend unit tests
 ```
 
-2. Install dependencies:
+## Quick Start
+
 ```bash
 npm install
-```
-
-3. Start the development server:
-```bash
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:8080`
+Open `http://localhost:8080`.
 
-## Building for Production
-
-To create a production-ready static website:
+Create a local `.env` from `.env.example` if you want Supabase-backed auth:
 
 ```bash
+cp .env.example .env
+```
+
+## Backend
+
+```bash
+cd backend
+npm install
 npm run build
+npm test
 ```
 
-This creates an optimized build in the `dist/` folder that can be deployed to any static hosting service.
-
-### Preview Production Build
-
-Test your production build locally:
+For full database mode, create a PostgreSQL database and copy `backend/env.example` to `backend/.env`.
 
 ```bash
-npm run preview
+npm run db:migrate
+npm run db:seed
+npm run dev
 ```
 
-### Deployment
+For API demo mode without PostgreSQL:
 
-The `dist/` folder contains everything needed for deployment. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions to:
-- Netlify
-- Vercel
-- GitHub Pages
-- Any static hosting service
-
-## Project Structure
-
-```
-src/
-├── components/           # Reusable UI components
-│   ├── ui/              # shadcn/ui components
-│   ├── SummaryCard.tsx  # Metric display cards
-│   ├── RiskCard.tsx     # Risk assessment cards
-│   ├── InteractiveMap.tsx # Leaflet map component
-│   ├── TimelineChart.tsx # Trend visualization
-│   └── RecommendationsList.tsx # Action suggestions
-├── pages/               # Application pages
-│   ├── Landing.tsx      # Home page
-│   ├── Login.tsx        # Authentication
-│   ├── Signup.tsx       # User registration
-│   ├── Dashboard.tsx    # Main dashboard
-│   ├── Regions.tsx      # Global risk map
-│   ├── Import.tsx       # Data upload
-│   └── Demo.tsx         # Demo experience
-├── hooks/               # Custom React hooks
-└── lib/                 # Utility functions
+```bash
+npm run demo
 ```
 
-## API Integration
+## Verification
 
-The app is designed to connect to a backend API at `http://localhost:4000/api`. Key endpoints:
+```bash
+npm run typecheck
+npm run build
+cd backend
+npm run build
+npm test
+```
 
-- `GET /api/footprints/summary` - Carbon footprint data
-- `POST /api/footprints/import` - CSV data upload
-- `POST /api/risk/evaluate` - Risk assessment
-- `GET /api/regions` - Global risk regions
+## Publish To Your GitHub
 
-## Demo Mode
+This local checkout has the original project configured as `upstream`. Create an empty repository in your GitHub account, then run:
 
-Visit `/demo` to explore the application with sample data without creating an account.
+```bash
+git remote add origin https://github.com/<your-username>/Climate.git
+git push -u origin main
+```
+
+After that, GitHub Actions will build/test the frontend and backend, then deploy the frontend from `dist` on pushes to `main`.
+
+## Resume Bullets
+
+- Developed a full-stack climate risk intelligence platform with React, TypeScript, Express, PostgreSQL, Supabase, and Leaflet.
+- Designed an explainable scenario engine translating emissions pathways and adaptation investment into regional humanitarian risk projections.
+- Implemented CI/CD with GitHub Actions, strict TypeScript verification, backend unit tests, and production bundle optimization.
+- Fixed emissions calculation accuracy by correcting unit normalization for kilometers, meters, kilograms, grams, and currency inputs.
 
 ## Disclaimer
 
-⚠️ **Important**: Humanitarian risk projections are simplified demo estimates for illustration purposes and should not be used for actual risk assessment or decision-making.
-
-## License
-
-This project is built for demonstration purposes. Please ensure compliance with relevant data protection and humanitarian guidelines when using real data.
+This project uses simplified scenario estimates for education and portfolio demonstration. It should not be used for operational humanitarian, financial, or policy decisions without validated climate datasets and expert review.

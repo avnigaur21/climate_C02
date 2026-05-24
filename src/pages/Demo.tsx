@@ -5,6 +5,7 @@ import { RiskCard } from "@/components/RiskCard";
 import { TimelineChart } from "@/components/TimelineChart";
 import { RecommendationsList } from "@/components/RecommendationsList";
 import { InteractiveMap } from "@/components/InteractiveMap";
+import { ScenarioLab } from "@/components/ScenarioLab";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -262,8 +263,9 @@ export default function Demo() {
 
         {/* Demo Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="scenario">Scenario Lab</TabsTrigger>
             <TabsTrigger value="regions">Risk Regions</TabsTrigger>
             <TabsTrigger value="import">Data Import</TabsTrigger>
           </TabsList>
@@ -376,6 +378,10 @@ export default function Demo() {
                 />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="scenario" className="space-y-8">
+            <ScenarioLab />
           </TabsContent>
 
           {/* Regions Tab */}

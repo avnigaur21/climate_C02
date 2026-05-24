@@ -16,11 +16,12 @@ const summaryQuerySchema = Joi.object({
 });
 
 // GET /api/footprints/summary
-router.get('/summary', authenticateToken, async (req: Request, res: Response) => {
+router.get('/summary', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = summaryQuerySchema.validate(req.query);
     if (error) {
-      return res.status(400).json({ error: error.details[0].message });
+      res.status(400).json({ error: error.details[0].message });
+      return;
     }
 
     const userId = (req as any).user.id;
@@ -41,10 +42,11 @@ router.get('/summary', authenticateToken, async (req: Request, res: Response) =>
 });
 
 // POST /api/footprints/import
-router.post('/import', authenticateToken, uploadSingle, async (req: Request, res: Response) => {
+router.post('/import', authenticateToken, uploadSingle, async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No CSV file uploaded' });
+      res.status(400).json({ error: 'No CSV file uploaded' });
+      return;
     }
 
     const userId = (req as any).user.id;
@@ -57,11 +59,12 @@ router.post('/import', authenticateToken, uploadSingle, async (req: Request, res
       // Validate CSV data
       const validation = CSVParser.validateCSVData(csvData);
       if (!validation.isValid) {
-        return res.status(400).json({ 
+        res.status(400).json({
           error: 'Invalid CSV data', 
           details: validation.errors,
           expectedFormat: CSVParser.getExpectedCSVFormat()
         });
+        return;
       }
 
       // Import footprints
@@ -86,7 +89,7 @@ router.post('/import', authenticateToken, uploadSingle, async (req: Request, res
 });
 
 // GET /api/footprints
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const limit = parseInt(req.query.limit as string) || 100;
@@ -109,7 +112,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // DELETE /api/footprints/:id
-router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.delete('/:id', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const footprintId = req.params.id;

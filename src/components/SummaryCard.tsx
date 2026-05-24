@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Activity } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
 
 interface SummaryCardProps {
   title: string;
@@ -23,6 +22,23 @@ export function SummaryCard({
   trend = "neutral",
   variant = "default"
 }: SummaryCardProps) {
+  const sparklinePoints = (() => {
+    if (!sparklineData || sparklineData.length === 0) return "";
+
+    const values = sparklineData.map((point) => point.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min || 1;
+
+    return sparklineData
+      .map((point, index) => {
+        const x = sparklineData.length === 1 ? 40 : (index / (sparklineData.length - 1)) * 78 + 1;
+        const y = 30 - ((point.value - min) / range) * 28;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(" ");
+  })();
+
   const getTrendIcon = () => {
     switch (trend) {
       case "up":
@@ -70,18 +86,17 @@ export function SummaryCard({
             )}
           </div>
           {sparklineData && (
-            <div className="w-20 h-8">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={sparklineData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={1.5}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="h-8 w-20 min-w-20" aria-hidden="true">
+              <svg viewBox="0 0 80 32" className="h-full w-full overflow-visible">
+                <polyline
+                  points={sparklinePoints}
+                  fill="none"
+                  stroke="hsl(var(--primary))"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                />
+              </svg>
             </div>
           )}
         </div>

@@ -13,11 +13,12 @@ const riskEvaluationSchema = Joi.object({
 });
 
 // POST /api/risk/evaluate
-router.post('/evaluate', authenticateToken, async (req: Request, res: Response) => {
+router.post('/evaluate', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = riskEvaluationSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ error: error.details[0].message });
+      res.status(400).json({ error: error.details[0].message });
+      return;
     }
 
     const { footprint_ids, region_ids } = value;
@@ -29,7 +30,8 @@ router.post('/evaluate', authenticateToken, async (req: Request, res: Response) 
     
     const invalidFootprints = userFootprints.filter(fp => fp.user_id !== userId);
     if (invalidFootprints.length > 0) {
-      return res.status(403).json({ error: 'Access denied to some footprints' });
+      res.status(403).json({ error: 'Access denied to some footprints' });
+      return;
     }
 
     const result = await riskEngine.evaluateRisk({ footprint_ids, region_ids });
@@ -45,7 +47,7 @@ router.post('/evaluate', authenticateToken, async (req: Request, res: Response) 
 });
 
 // GET /api/risk/signals/footprint/:footprintId
-router.get('/signals/footprint/:footprintId', authenticateToken, async (req: Request, res: Response) => {
+router.get('/signals/footprint/:footprintId', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const footprintId = req.params.footprintId;
     const userId = (req as any).user.id;
@@ -55,7 +57,8 @@ router.get('/signals/footprint/:footprintId', authenticateToken, async (req: Req
     const userFootprints = await footprintService.getFootprintsByIds([footprintId]);
     
     if (userFootprints.length === 0 || userFootprints[0].user_id !== userId) {
-      return res.status(404).json({ error: 'Footprint not found' });
+      res.status(404).json({ error: 'Footprint not found' });
+      return;
     }
 
     const riskSignals = await riskEngine.getRiskSignalsByFootprint(footprintId);
@@ -71,7 +74,7 @@ router.get('/signals/footprint/:footprintId', authenticateToken, async (req: Req
 });
 
 // GET /api/risk/signals/region/:regionId
-router.get('/signals/region/:regionId', authenticateToken, async (req: Request, res: Response) => {
+router.get('/signals/region/:regionId', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
     const regionId = req.params.regionId;
 
