@@ -53,7 +53,7 @@ export default function Signup() {
       }
 
       // Create account with Supabase
-      const { error } = await signUp(formData.email, formData.password, {
+      const { error, mode } = await signUp(formData.email, formData.password, {
         first_name: formData.firstName,
         last_name: formData.lastName,
         full_name: `${formData.firstName} ${formData.lastName}`.trim()
@@ -65,10 +65,12 @@ export default function Signup() {
       
       toast({
         title: "Account created successfully!",
-        description: "Please check your email to confirm your account.",
+        description: mode === "demo"
+          ? "Demo auth is active because the cloud auth service is unreachable. You can sign in on this browser with the same email and password."
+          : "Please check your email to confirm your account.",
       });
       
-      navigate("/login");
+      navigate(mode === "demo" ? "/dashboard" : "/login");
     } catch (error) {
       toast({
         title: "Signup failed",

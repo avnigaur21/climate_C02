@@ -26,7 +26,7 @@ export default function Login() {
         throw new Error("Please fill in all fields");
       }
 
-      const { error } = await signIn(email, password);
+      const { error, mode } = await signIn(email, password);
       
       if (error) {
         throw error;
@@ -34,7 +34,9 @@ export default function Login() {
 
       toast({
         title: "Login successful",
-        description: "Welcome back to Carbon Risk Tracker",
+        description: mode === "demo"
+          ? "Welcome back. Demo auth is active because the cloud auth service is unreachable."
+          : "Welcome back to Carbon Risk Tracker",
       });
       navigate("/dashboard");
     } catch (error: any) {

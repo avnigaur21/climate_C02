@@ -7,12 +7,13 @@ type DemoUser = Pick<User, 'id' | 'email' | 'created_at' | 'user_metadata'> & {
 };
 
 type AuthUser = User | DemoUser;
+type AuthResult = { error: any; mode?: 'supabase' | 'demo' };
 
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string, metadata?: Record<string, string>) => Promise<AuthResult>;
   signOut: () => Promise<void>;
 }
 
@@ -124,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe?.();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<AuthResult> => {
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -134,7 +135,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!error) {
           setUser(data.user);
-          return { error: null };
+          return { error: null, mode: 'supabase' };
+        }
+
+        if (isFetchFailure(error)) {
+          const result = signInDemoAccount(email, password);
+          if (!result.error) setUser(result.user);
+          return { error: result.error, mode: 'demo' };
         }
 
         return { error };
@@ -145,10 +152,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const result = signInDemoAccount(email, password);
     if (!result.error) setUser(result.user);
-    return { error: result.error };
+    return { error: result.error, mode: 'demo' };
   };
 
-  const signUp = async (email: string, password: string, metadata: Record<string, string> = {}) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    metadata: Record<string, string> = {}
+  ): Promise<AuthResult> => {
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.auth.signUp({
@@ -161,7 +172,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!error) {
           if (data.user) setUser(data.user);
-          return { error: null };
+          return { error: null, mode: 'supabase' };
+        }
+
+        if (isFetchFailure(error)) {
+          const result = createDemoAccount(email, password, metadata);
+          if (!result.error) setUser(result.user);
+          return { error: result.error, mode: 'demo' };
         }
 
         return { error };
@@ -172,7 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const result = createDemoAccount(email, password, metadata);
     if (!result.error) setUser(result.user);
-    return { error: result.error };
+    return { error: result.error, mode: 'demo' };
   };
 
   const signOut = async () => {
