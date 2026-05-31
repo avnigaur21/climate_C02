@@ -20,6 +20,8 @@ The project is built as a resume-ready portfolio piece: it has product polish, s
 - Interactive Leaflet map of vulnerable regions.
 - CSV import UI and backend CSV parsing/calculation service.
 - Supabase-powered frontend auth integration and Express/JWT backend auth implementation.
+- Production Supabase schema for profiles, imports, footprints, regions, and user-scoped risk evaluations.
+- Row Level Security policies that restrict private user data by `auth.uid()`.
 - PostgreSQL schema, migrations, seed data, and demo backend server.
 
 ## Tech Stack
@@ -58,6 +60,8 @@ Create a local `.env` from `.env.example` if you want Supabase-backed auth:
 ```bash
 cp .env.example .env
 ```
+
+For production Supabase setup, database migrations, auth redirect URLs, and GitHub Pages secrets, follow [SUPABASE_PRODUCTION.md](SUPABASE_PRODUCTION.md).
 
 ## Backend
 

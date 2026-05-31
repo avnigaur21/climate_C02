@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigation } from "@/components/ui/navigation";
 import { InteractiveMap } from "@/components/InteractiveMap";
-import { RiskCard } from "@/components/RiskCard";
 import { SummaryCard } from "@/components/SummaryCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -18,7 +16,7 @@ import {
   AlertTriangle,
   Info
 } from "lucide-react";
-import { climateRegions } from "@/lib/climateScenario";
+import { fetchRegionCatalog } from "@/lib/supabaseData";
 
 interface RegionData {
   id: string;
@@ -36,27 +34,47 @@ interface RegionData {
 export default function Regions() {
   const [isAuthenticated] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState<RegionData | null>(null);
+  const [regions, setRegions] = useState<RegionData[]>([]);
+  const [regionsSource, setRegionsSource] = useState<"supabase" | "demo">("demo");
+  const [isLoadingRegions, setIsLoadingRegions] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
 
-  const regions: RegionData[] = climateRegions.map((region) => {
-    const riskScore = Math.round(region.vulnerabilityIndex * 100);
+  useEffect(() => {
+    let cancelled = false;
 
-    return {
-      id: region.id,
-      name: region.name,
-      lat: region.lat,
-      lng: region.lng,
-      riskScore,
-      peopleAffected: Math.round(region.population * region.exposureFraction * (riskScore / 100)),
-      primaryRisk: region.primaryRisk,
-      climateImpacts: region.climateImpacts,
-      population: region.population,
-      vulnerabilityIndex: Number((region.vulnerabilityIndex * 10).toFixed(1))
+    fetchRegionCatalog()
+      .then(({ regions: regionCatalog, source }) => {
+        if (cancelled) return;
+
+        setRegions(regionCatalog.map((region) => {
+          const riskScore = Math.round(region.vulnerabilityIndex * 100);
+
+          return {
+            id: region.id,
+            name: region.name,
+            lat: region.lat,
+            lng: region.lng,
+            riskScore,
+            peopleAffected: Math.round(region.population * region.exposureFraction * (riskScore / 100)),
+            primaryRisk: region.primaryRisk,
+            climateImpacts: region.climateImpacts,
+            population: region.population,
+            vulnerabilityIndex: Number((region.vulnerabilityIndex * 10).toFixed(1))
+          };
+        }));
+        setRegionsSource(source);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingRegions(false);
+      });
+
+    return () => {
+      cancelled = true;
     };
-  });
+  }, []);
 
-  const filteredRegions = regions.filter(region => {
+  const filteredRegions = useMemo(() => regions.filter(region => {
     const matchesSearch = region.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          region.primaryRisk.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -66,17 +84,19 @@ export default function Regions() {
                        (riskFilter === "low" && region.riskScore < 60);
 
     return matchesSearch && matchesRisk;
-  });
+  }), [regions, riskFilter, searchTerm]);
 
-  const handleRegionClick = (region: RegionData) => {
+  const handleRegionClick = useCallback((region: RegionData) => {
     setSelectedRegion(region);
-  };
+  }, []);
 
-  const globalStats = {
+  const globalStats = useMemo(() => ({
     totalAffected: regions.reduce((sum, region) => sum + region.peopleAffected, 0),
     highRiskRegions: regions.filter(r => r.riskScore >= 80).length,
-    averageRisk: Math.round(regions.reduce((sum, region) => sum + region.riskScore, 0) / regions.length)
-  };
+    averageRisk: regions.length
+      ? Math.round(regions.reduce((sum, region) => sum + region.riskScore, 0) / regions.length)
+      : 0
+  }), [regions]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -91,9 +111,9 @@ export default function Regions() {
               Explore vulnerable regions and their climate risk profiles
             </p>
           </div>
-          <Badge variant="outline" className="text-warning border-warning">
+          <Badge variant={regionsSource === "supabase" ? "default" : "outline"} className={regionsSource === "demo" ? "text-warning border-warning" : ""}>
             <Info className="h-3 w-3 mr-1" />
-            Demo Data
+            {regionsSource === "supabase" ? "Live Supabase regions" : "Demo data"}
           </Badge>
         </div>
 
@@ -135,11 +155,17 @@ export default function Regions() {
                 </p>
               </CardHeader>
               <CardContent>
-                <InteractiveMap
-                  regions={filteredRegions}
-                  onRegionClick={handleRegionClick}
-                  className="h-96"
-                />
+                {isLoadingRegions ? (
+                  <div className="h-96 rounded-lg border bg-muted/40 flex items-center justify-center text-sm text-muted-foreground">
+                    Loading regional risk data...
+                  </div>
+                ) : (
+                  <InteractiveMap
+                    regions={filteredRegions}
+                    onRegionClick={handleRegionClick}
+                    className="h-96"
+                  />
+                )}
               </CardContent>
             </Card>
 
@@ -234,6 +260,9 @@ export default function Regions() {
                 <CardTitle>Risk Regions ({filteredRegions.length})</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 max-h-96 overflow-y-auto">
+                {isLoadingRegions && (
+                  <p className="text-sm text-muted-foreground">Loading regions...</p>
+                )}
                 {filteredRegions.map((region) => (
                   <div
                     key={region.id}

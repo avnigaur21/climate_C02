@@ -7,371 +7,232 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
-      achievements: {
-        Row: {
-          created_at: string | null
-          criteria: Json
-          description: string
-          icon: string | null
-          id: string
-          name: string
-          points: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          criteria: Json
-          description: string
-          icon?: string | null
-          id?: string
-          name: string
-          points?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          criteria?: Json
-          description?: string
-          icon?: string | null
-          id?: string
-          name?: string
-          points?: number | null
-        }
-        Relationships: []
-      }
-      activities: {
-        Row: {
-          activity_date: string
-          amount: number
-          category_id: string
-          created_at: string | null
-          data_source: string | null
-          description: string | null
-          id: string
-          metadata: Json | null
-          title: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          activity_date?: string
-          amount: number
-          category_id: string
-          created_at?: string | null
-          data_source?: string | null
-          description?: string | null
-          id?: string
-          metadata?: Json | null
-          title: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          activity_date?: string
-          amount?: number
-          category_id?: string
-          created_at?: string | null
-          data_source?: string | null
-          description?: string | null
-          id?: string
-          metadata?: Json | null
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activities_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "emission_categories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      challenges: {
-        Row: {
-          challenge_type: string
-          created_at: string | null
-          description: string
-          end_date: string
-          id: string
-          is_active: boolean | null
-          points_reward: number | null
-          start_date: string
-          target_value: number
-          title: string
-        }
-        Insert: {
-          challenge_type: string
-          created_at?: string | null
-          description: string
-          end_date: string
-          id?: string
-          is_active?: boolean | null
-          points_reward?: number | null
-          start_date: string
-          target_value: number
-          title: string
-        }
-        Update: {
-          challenge_type?: string
-          created_at?: string | null
-          description?: string
-          end_date?: string
-          id?: string
-          is_active?: boolean | null
-          points_reward?: number | null
-          start_date?: string
-          target_value?: number
-          title?: string
-        }
-        Relationships: []
-      }
-      emission_categories: {
-        Row: {
-          color: string | null
-          created_at: string | null
-          description: string | null
-          icon: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          icon?: string | null
-          id?: string
-          name: string
-        }
-        Update: {
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          icon?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
-      goals: {
-        Row: {
-          created_at: string | null
-          current_progress: number | null
-          description: string | null
-          id: string
-          status: string | null
-          target_date: string
-          target_reduction: number
-          title: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          current_progress?: number | null
-          description?: string | null
-          id?: string
-          status?: string | null
-          target_date: string
-          target_reduction: number
-          title: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          current_progress?: number | null
-          description?: string | null
-          id?: string
-          status?: string | null
-          target_date?: string
-          target_reduction?: number
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      integration_data_logs: {
-        Row: {
-          created_at: string | null
-          data_type: string
-          id: string
-          integration_id: string | null
-          processed_emissions: number | null
-          raw_data: Json | null
-          sync_timestamp: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          data_type: string
-          id?: string
-          integration_id?: string | null
-          processed_emissions?: number | null
-          raw_data?: Json | null
-          sync_timestamp?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          data_type?: string
-          id?: string
-          integration_id?: string | null
-          processed_emissions?: number | null
-          raw_data?: Json | null
-          sync_timestamp?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "integration_data_logs_integration_id_fkey"
-            columns: ["integration_id"]
-            isOneToOne: false
-            referencedRelation: "user_integrations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
-          created_at: string | null
+          id: string
           email: string | null
           full_name: string | null
-          id: string
-          updated_at: string | null
+          location: string | null
+          country: string | null
+          avatar_url: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
+          id: string
           email?: string | null
           full_name?: string | null
-          id: string
-          updated_at?: string | null
+          location?: string | null
+          country?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
+          id?: string
           email?: string | null
           full_name?: string | null
-          id?: string
-          updated_at?: string | null
+          location?: string | null
+          country?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
-      user_achievements: {
+      imports: {
         Row: {
-          achievement_id: string
-          earned_at: string | null
           id: string
           user_id: string
+          filename: string
+          source: string
+          status: 'processing' | 'completed' | 'failed'
+          row_count: number
+          total_co2_kg: number
+          errors: Json
+          created_at: string
         }
         Insert: {
-          achievement_id: string
-          earned_at?: string | null
           id?: string
           user_id: string
+          filename: string
+          source?: string
+          status?: 'processing' | 'completed' | 'failed'
+          row_count?: number
+          total_co2_kg?: number
+          errors?: Json
+          created_at?: string
         }
         Update: {
-          achievement_id?: string
-          earned_at?: string | null
           id?: string
           user_id?: string
+          filename?: string
+          source?: string
+          status?: 'processing' | 'completed' | 'failed'
+          row_count?: number
+          total_co2_kg?: number
+          errors?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
+      footprints: {
+        Row: {
+          id: string
+          user_id: string
+          import_id: string | null
+          category: 'transport' | 'energy' | 'food' | 'shopping' | 'purchase' | 'travel' | 'other'
+          description: string | null
+          activity_date: string
+          amount: number
+          unit: string
+          co2_kg: number
+          emission_factor: number | null
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          import_id?: string | null
+          category: 'transport' | 'energy' | 'food' | 'shopping' | 'purchase' | 'travel' | 'other'
+          description?: string | null
+          activity_date?: string
+          amount?: number
+          unit?: string
+          co2_kg: number
+          emission_factor?: number | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          import_id?: string | null
+          category?: 'transport' | 'energy' | 'food' | 'shopping' | 'purchase' | 'travel' | 'other'
+          description?: string | null
+          activity_date?: string
+          amount?: number
+          unit?: string
+          co2_kg?: number
+          emission_factor?: number | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_achievements_achievement_id_fkey"
-            columns: ["achievement_id"]
+            foreignKeyName: 'footprints_import_id_fkey'
+            columns: ['import_id']
             isOneToOne: false
-            referencedRelation: "achievements"
-            referencedColumns: ["id"]
+            referencedRelation: 'imports'
+            referencedColumns: ['id']
           },
         ]
       }
-      user_challenges: {
+      regions: {
         Row: {
-          challenge_id: string
-          completed: boolean | null
-          completed_at: string | null
-          current_progress: number | null
           id: string
-          joined_at: string | null
-          user_id: string
+          region_code: string
+          name: string
+          lat: number
+          lng: number
+          population: number
+          vulnerability_index: number
+          exposure_fraction: number
+          primary_risk: string
+          climate_impacts: string[]
+          hazard_weights: Json
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          challenge_id: string
-          completed?: boolean | null
-          completed_at?: string | null
-          current_progress?: number | null
           id?: string
-          joined_at?: string | null
-          user_id: string
+          region_code: string
+          name: string
+          lat: number
+          lng: number
+          population: number
+          vulnerability_index: number
+          exposure_fraction: number
+          primary_risk: string
+          climate_impacts?: string[]
+          hazard_weights?: Json
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          challenge_id?: string
-          completed?: boolean | null
-          completed_at?: string | null
-          current_progress?: number | null
           id?: string
-          joined_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_challenges_challenge_id_fkey"
-            columns: ["challenge_id"]
-            isOneToOne: false
-            referencedRelation: "challenges"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_integrations: {
-        Row: {
-          config: Json | null
-          created_at: string | null
-          data_points_synced: number | null
-          id: string
-          last_sync: string | null
-          name: string
-          status: string
-          type: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          config?: Json | null
-          created_at?: string | null
-          data_points_synced?: number | null
-          id?: string
-          last_sync?: string | null
-          name: string
-          status?: string
-          type: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          config?: Json | null
-          created_at?: string | null
-          data_points_synced?: number | null
-          id?: string
-          last_sync?: string | null
+          region_code?: string
           name?: string
-          status?: string
-          type?: string
-          updated_at?: string | null
-          user_id?: string | null
+          lat?: number
+          lng?: number
+          population?: number
+          vulnerability_index?: number
+          exposure_fraction?: number
+          primary_risk?: string
+          climate_impacts?: string[]
+          hazard_weights?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      risk_evaluations: {
+        Row: {
+          id: string
+          user_id: string
+          footprint_id: string | null
+          region_id: string
+          risk_type: 'flood' | 'drought' | 'heat' | 'displacement' | 'food_insecurity' | 'storm' | 'general'
+          risk_score: number
+          people_at_risk: number
+          scenario: Json
+          explanation: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          footprint_id?: string | null
+          region_id: string
+          risk_type: 'flood' | 'drought' | 'heat' | 'displacement' | 'food_insecurity' | 'storm' | 'general'
+          risk_score: number
+          people_at_risk?: number
+          scenario?: Json
+          explanation?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          footprint_id?: string | null
+          region_id?: string
+          risk_type?: 'flood' | 'drought' | 'heat' | 'displacement' | 'food_insecurity' | 'storm' | 'general'
+          risk_score?: number
+          people_at_risk?: number
+          scenario?: Json
+          explanation?: string | null
+          created_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_integrations_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'risk_evaluations_region_id_fkey'
+            columns: ['region_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'regions'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'risk_evaluations_footprint_id_fkey'
+            columns: ['footprint_id']
+            isOneToOne: false
+            referencedRelation: 'footprints'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -380,34 +241,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_emissions_leaderboard: {
-        Args: { limit_count?: number }
-        Returns: {
-          email: string
-          full_name: string
-          total_emissions: number
-          user_id: string
-        }[]
-      }
-      get_points_leaderboard: {
-        Args: { limit_count?: number }
-        Returns: {
-          email: string
-          full_name: string
-          total_points: number
-          user_id: string
-        }[]
-      }
-      get_user_gamification_stats: {
-        Args: { user_id_param: string }
-        Returns: {
-          achievements_count: number
-          challenges_completed: number
-          current_streak: number
-          rank: number
-          total_points: number
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
@@ -418,125 +252,13 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DefaultSchema = Database['public']
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+export type Tables<TableName extends keyof DefaultSchema['Tables']> =
+  DefaultSchema['Tables'][TableName]['Row']
 
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+export type TablesInsert<TableName extends keyof DefaultSchema['Tables']> =
+  DefaultSchema['Tables'][TableName]['Insert']
 
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
-
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
-
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const
+export type TablesUpdate<TableName extends keyof DefaultSchema['Tables']> =
+  DefaultSchema['Tables'][TableName]['Update']

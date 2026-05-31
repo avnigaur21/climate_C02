@@ -1,1 +1,12 @@
-project_id = "dmlnmznrveetiuoatbfl"
+project_id = "qwxiewlsnalickilzehd"
+
+[auth]
+site_url = "https://avnigaur21.github.io/climate_C02/"
+additional_redirect_urls = [
+  "http://localhost:8080",
+  "http://localhost:8080/login",
+  "http://127.0.0.1:8080",
+  "http://127.0.0.1:8080/login",
+  "https://avnigaur21.github.io/climate_C02/",
+  "https://avnigaur21.github.io/climate_C02/login"
+]

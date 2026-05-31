@@ -8,6 +8,7 @@ const SUPABASE_URL = cleanEnvValue(import.meta.env.VITE_SUPABASE_URL);
 const SUPABASE_PUBLISHABLE_KEY = cleanEnvValue(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
+export const isDemoAuthFallbackEnabled = import.meta.env.VITE_ENABLE_DEMO_AUTH_FALLBACK === "true";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

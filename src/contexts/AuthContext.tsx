@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
-import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
+import { isDemoAuthFallbackEnabled, isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
 
 type DemoUser = Pick<User, 'id' | 'email' | 'created_at' | 'user_metadata'> & {
   is_demo_user: true;
@@ -34,6 +34,12 @@ const isFetchFailure = (error: unknown) => {
   return message.toLowerCase().includes('failed to fetch') || message.toLowerCase().includes('fetch failed');
 };
 
+const authServiceUnavailableError = () =>
+  new Error('Authentication service is unreachable. Please check Supabase env vars, allowed redirect URLs, and network access.');
+
+const shouldUseDemoFallback = () => !isSupabaseConfigured || isDemoAuthFallbackEnabled;
+const authRedirectUrl = () => new URL('login', window.location.href).toString();
+
 const readDemoUsers = (): StoredDemoUser[] => {
   try {
     return JSON.parse(localStorage.getItem(DEMO_USERS_KEY) || '[]');
@@ -65,7 +71,7 @@ const createDemoAccount = (email: string, password: string, metadata: Record<str
   }
 
   const user: StoredDemoUser = {
-    id: crypto.randomUUID(),
+    id: `demo-${crypto.randomUUID()}`,
     email: normalizedEmail,
     password,
     created_at: new Date().toISOString(),
@@ -104,17 +110,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? getDemoSession());
+        setUser(session?.user ?? (shouldUseDemoFallback() ? getDemoSession() : null));
 
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-          setUser(session?.user ?? getDemoSession());
+          setUser(session?.user ?? (shouldUseDemoFallback() ? getDemoSession() : null));
           setLoading(false);
         });
         unsubscribe = () => subscription.unsubscribe();
       } catch (error) {
-        setUser(getDemoSession());
+        setUser(shouldUseDemoFallback() ? getDemoSession() : null);
       } finally {
         setLoading(false);
       }
@@ -138,15 +144,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { error: null, mode: 'supabase' };
         }
 
-        if (isFetchFailure(error)) {
+        if (isFetchFailure(error) && shouldUseDemoFallback()) {
           const result = signInDemoAccount(email, password);
           if (!result.error) setUser(result.user);
           return { error: result.error, mode: 'demo' };
+        } else if (isFetchFailure(error)) {
+          return { error: authServiceUnavailableError() };
         }
 
         return { error };
       } catch (error) {
         if (!isFetchFailure(error)) return { error };
+        if (!shouldUseDemoFallback()) return { error: authServiceUnavailableError() };
       }
     }
 
@@ -166,7 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email,
           password,
           options: {
-            data: metadata
+            data: metadata,
+            emailRedirectTo: authRedirectUrl()
           }
         });
 
@@ -175,15 +185,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { error: null, mode: 'supabase' };
         }
 
-        if (isFetchFailure(error)) {
+        if (isFetchFailure(error) && shouldUseDemoFallback()) {
           const result = createDemoAccount(email, password, metadata);
           if (!result.error) setUser(result.user);
           return { error: result.error, mode: 'demo' };
+        } else if (isFetchFailure(error)) {
+          return { error: authServiceUnavailableError() };
         }
 
         return { error };
       } catch (error) {
         if (!isFetchFailure(error)) return { error };
+        if (!shouldUseDemoFallback()) return { error: authServiceUnavailableError() };
       }
     }
 
